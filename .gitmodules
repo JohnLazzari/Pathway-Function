@@ -1,0 +1,3 @@
+[submodule "Training/mRNNTorch"]
+	path = Training/mRNNTorch
+	url = https://github.com/JohnLazzari/mRNNTorch.git
