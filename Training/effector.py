@@ -184,9 +184,7 @@ class Effector(th.nn.Module):
       if joint_state_shape[0] > 1:
         batch_size = joint_state_shape[0]
 
-    #joint0 = self._parse_initial_joint_state(joint_state=joint_state, batch_size=batch_size)
-    
-    joint0 = th.Tensor([[0.0, pi, 0.0, 0.0]])
+    joint0 = self._parse_initial_joint_state(joint_state=joint_state, batch_size=batch_size)
     geometry0 = self.get_geometry(joint0)
     muscle0 = self.muscle.get_initial_muscle_state(batch_size=batch_size, geometry_state=geometry0)
     activation0 = np.array([0.0] * self.n_muscles)

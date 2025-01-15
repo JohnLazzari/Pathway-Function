@@ -4,9 +4,8 @@ import numpy as np
 import scipy.io
 import matplotlib.pyplot as plt
 
-from agent_training import OptimizerSpec, On_Policy_Agent, Off_Policy_Agent
+from agent_training import OptimizerSpec, Off_Policy_Agent
 from optimization import optimizer 
-from two_link_env import TwoLinkArmEnv
 from motornet_env import EffectorTwoLinkArmEnv
 import torch
 import config

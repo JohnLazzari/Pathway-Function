@@ -16,7 +16,7 @@ import time
 import jax.numpy as np
 import pygame
 from pygame import gfxdraw
-from effector import Effector , RigidTendonArm26
+from effector import Effector, RigidTendonArm26, ReluPointMass24
 
 
 #Environment class
@@ -56,17 +56,11 @@ class EffectorTwoLinkArmEnv(gym.Env):
         self.seed() #initialize a seed
 
         #Motor Net Effector
-        self.two_link_arm = RigidTendonArm26(
-            muscle = mn.muscle.RigidTendonHillMuscleThelen(),
-            name = 'Effector',
-            n_ministeps = 1, 
-            timestep =  self.dt,
-            integration_method = 'euler',
-            damping = 0,
-            )
+        self.two_link_arm = ReluPointMass24()
+        self.two_link_arm = self.two_link_arm.to("cuda")
         
-        self._l1 = self.two_link_arm.skeleton.l1
-        self._l2 = self.two_link_arm.skeleton.l2
+        #self._l1 = self.two_link_arm.skeleton.l1
+        #self._l2 = self.two_link_arm.skeleton.l2
 
         #Visualizations 
         #Pygame
@@ -102,9 +96,9 @@ class EffectorTwoLinkArmEnv(gym.Env):
         #Change Target according to episode
         
         if episode % 2 == 0 :
-            self.target = th.tensor([-0.2, 0.55])
+            self.target = th.tensor([-0.2, 0.55], device="cuda")
         else:
-            self.target = th.tensor([0.45, 0.55])
+            self.target = th.tensor([0.45, 0.55], device="cuda")
         
         
 
@@ -121,7 +115,7 @@ class EffectorTwoLinkArmEnv(gym.Env):
 
         self.obs_state = th.cat([self.target, self.joints, self.fingertip]).unsqueeze(0)
 
-        self.render_2(self.joints[:2])
+        #self.render_2(self.joints[:2])
 
         return self.obs_state
 
@@ -140,7 +134,7 @@ class EffectorTwoLinkArmEnv(gym.Env):
         
         return False  
         
-    def step(self, episode_steps, action,total_episodes=0): 
+    def step(self, episode_steps, action, total_episodes=0): 
 
         
         #Take step in environment and integrate, default is Euler
@@ -164,7 +158,7 @@ class EffectorTwoLinkArmEnv(gym.Env):
         done = self.done(episode_steps)
 
         #Visualize
-        self.render_2(self.joints[:2])
+        #self.render_2(self.joints[:2])
         
         # Return environment variables
         return self.obs_state, reward,  done

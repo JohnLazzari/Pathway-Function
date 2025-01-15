@@ -17,7 +17,7 @@ from reward_vis import *
 from policy_replay import PolicyReplayBuffer
 from torch.optim import Adam
 
-from models import RNN_MultiRegional, RNN, Critic, Critic2
+from models import RNN, Critic, Critic2
 import scipy.io as sio
 import matplotlib.pyplot as plt
 

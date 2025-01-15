@@ -104,9 +104,10 @@ class optimizer():
 
             #reset environment 
             #returns state of : target [x,y] , joint angles and velocity [a,b,c,d], fingertip positions [d,f]
-            h = torch.zeros(size = (1,self.hid_dim), device = self.device )
+            h = torch.zeros(size = (1,self.hid_dim), device=self.device)
 
             state = self.env.reset(episode)
+            state = state.to(self.device)
 
             #get x,y position (fingertip)
             xy = [state[:, -2:]]
