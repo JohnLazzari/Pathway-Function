@@ -32,8 +32,8 @@ class Policy(nn.Module):
 
         self.to(device)
 
-    def forward(self, h, obs):
-        x, h = self.mrnn(h, obs[:, None, :])
+    def forward(self, h, obs, noise=True):
+        x, h = self.mrnn(h, obs[:, None, :], noise=noise)
         h = h.squeeze(1)
         m1_act = get_region_activity(self.mrnn, h, "alm")
         u = self.sigmoid(self.fc(m1_act)).squeeze(dim=1)

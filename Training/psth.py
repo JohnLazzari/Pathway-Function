@@ -95,14 +95,13 @@ def main():
 
     fig = plt.figure()
     for i, region in enumerate(policy.mrnn.region_dict):
-        ax = fig.add_subplot(2, 4, i+1, projection='3d')
+        ax = fig.add_subplot(2, 4, i+1)
         for cond in range(num_conds):
-            pca_obj = PCA(n_components=3)
             all_hs_region = get_region_activity(policy.mrnn, act_conds[cond], region)
-            all_hs_reduced = pca_obj.fit_transform(np.reshape(all_hs_region.numpy(), [-1, all_hs_region.shape[-1]]))
-            all_hs_reduced = np.reshape(all_hs_reduced, [all_hs_region.shape[0], all_hs_region.shape[1], 3])
+            all_hs_reduced = np.mean(all_hs_region.numpy(), axis=-1)
+            all_hs_reduced = np.reshape(all_hs_reduced, [all_hs_region.shape[0], all_hs_region.shape[1]])
             trial_averaged_act = np.mean(all_hs_reduced, axis=0)
-            ax.plot(trial_averaged_act[:, 0], trial_averaged_act[:, 1], trial_averaged_act[:, 2], color=colors[cond], label=f"Cond {cond+1}")
+            ax.plot(trial_averaged_act, color=colors[cond], label=f"Cond {cond}")
             ax.set_title(region)
     plt.legend()
     plt.show()

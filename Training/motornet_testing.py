@@ -17,7 +17,7 @@ def main():
     device = torch.device("cpu")
 
     # Parameters for testing
-    batch_size = 100
+    batch_size = 25
     config = "configurations/mRNN_hyperdirect.json"
     model_save_patorch = "checkpoints/mRNN_reaching.pth"
 
@@ -33,8 +33,9 @@ def main():
     # initialize batch
     h = torch.zeros(size=(batch_size, policy.mrnn.total_num_units))
     h = get_initial_condition(policy.mrnn, h)
+    joint_state = torch.zeros(size=(batch_size, 4))
 
-    obs, info = env.reset(options={"batch_size": batch_size})
+    obs, info = env.reset(options={"batch_size": batch_size, "joint_state": joint_state})
     terminated = False
 
     # initial positions and targets
@@ -44,7 +45,7 @@ def main():
     # simulate whole episode
     while not terminated:  # will run until `max_ep_duration` is reached
         with torch.no_grad():
-            action, h = policy(h, obs)
+            action, h = policy(h, obs, noise=False)
             obs, reward, terminated, truncated, info = env.step(action=action)
 
             xy.append(info["states"]["fingertip"][:, None, :])  # trajectories
@@ -55,8 +56,14 @@ def main():
     tg = torch.cat(tg, axis=1)
     loss = l1(xy, tg)  # L1 loss on position
 
-    print(xy.shape)
-    print(tg.shape)
+    colors = plt.cm.inferno(np.linspace(0, 1, len(xy))) 
+
+    for i, batch in enumerate(xy):
+        color = colors[i]
+        plt.plot(batch[:, 0], batch[:, 1], color=color)
+        plt.scatter(batch[0, 0], batch[0, 1], s=150, marker='x', color=color)
+        plt.scatter(tg[i, -1, 0], tg[i, -1, 1], s=150, marker='^', color=color)
+    plt.show()
 
 if __name__ == "__main__":
     main()
