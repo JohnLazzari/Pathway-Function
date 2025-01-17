@@ -2,39 +2,54 @@ import os
 import sys
 import json
 import numpy as np
-import torch as th
+import torch
 import matplotlib.pyplot as plt
 import motornet as mn
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from mRNNTorch.mRNN import mRNN
 from mRNNTorch.utils import get_region_activity, get_initial_condition
 from models import Policy
+import config_supervised
+
+def l1(x, y):
+    """L1 loss"""
+    return torch.mean(torch.sum(torch.abs(x - y), dim=-1))
 
 def main():
 
-    device = th.device("cpu")
+    ### PARAMETERS ###
+    parser = config_supervised.config_parser()
+    args = parser.parse_args()
+
+    torch.manual_seed(args.seed)
+
+    device = torch.device("cpu")
     effector = mn.effector.RigidTendonArm26(mn.muscle.MujocoHillMuscle())
     env = mn.environment.RandomTargetReach(effector=effector, max_ep_duration=1.)
 
-    config = "configurations/mRNN_thal_inp.json"
-    model_save_path = "checkpoints/mRNN_thal_inp"
-    policy = Policy(config, 50, env.n_muscles, device=device)
-    optimizer = th.optim.Adam(policy.parameters(), lr=10**-3)
+    policy = Policy(
+        args.model_config_path, 
+        50, 
+        env.n_muscles, 
+        activation_name=args.activation_name,
+        noise_level_act=args.noise_level_act, 
+        noise_level_inp=args.noise_level_inp, 
+        constrained=args.constrained, 
+        dt=args.dt,
+        t_const=args.t_const,
+        device=device
+        )
+    optimizer = torch.optim.Adam(policy.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
-    batch_size = 1
-    n_batch = 10000
     losses = []
     interval = 250
 
-    def l1(x, y):
-        """L1 loss"""
-        return th.mean(th.sum(th.abs(x - y), dim=-1))
-
-    for batch in range(n_batch):
+    for batch in range(args.epochs):
         # initialize batch
-        h = th.zeros(size=(batch_size, policy.mrnn.total_num_units))
+        h = torch.zeros(size=(args.batch_size, policy.mrnn.total_num_units))
         h = get_initial_condition(policy.mrnn, h)
         # Get first timestep
-        obs, info = env.reset(options={"batch_size": batch_size})
+        obs, info = env.reset(options={"batch_size": args.batch_size})
         terminated = False
 
         # initial positions and targets
@@ -50,23 +65,23 @@ def main():
             tg.append(info["goal"][:, None, :])  # targets
 
         # concatenate into a (batch_size, n_timesteps, xy) tensor
-        xy = th.cat(xy, axis=0)
-        tg = th.cat(tg, axis=0)
+        xy = torch.cat(xy, axis=0)
+        tg = torch.cat(tg, axis=0)
         loss = l1(xy, tg)  # L1 loss on position
         
         # backward pass & update weights
         optimizer.zero_grad() 
         loss.backward()
-        th.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=1.)  # important!
+        torch.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=1.)  # important!
         optimizer.step()
         losses.append(loss.item())
         if (batch % interval == 0) and (batch != 0):
-            print("Batch {}/{} Done, mean policy loss: {}".format(batch, n_batch, sum(losses[-interval:])/interval))
+            print("Batch {}/{} Done, mean policy loss: {}".format(batch, args.epochs, sum(losses[-interval:])/interval))
 
-        if batch % 1000 == 0:
-            th.save({
+        if batch % args.save_iter == 0:
+            torch.save({
                 'agent_state_dict': policy.state_dict(),
-            }, model_save_path + '.pth')
+            }, args.model_save_path)
 
 if __name__ == "__main__":
     main()

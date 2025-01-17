@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 import motornet as mn
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from mRNNTorch.mRNN import mRNN
 from mRNNTorch.utils import get_region_activity, get_initial_condition
 from models import Policy
@@ -19,7 +20,7 @@ def main():
     # Parameters for testing
     batch_size = 25
     rand_state = False
-    config = "configurations/mRNN_thal_inp.json"
+    config = "Training/configurations/mRNN_thal_inp.json"
     model_save_patorch = "checkpoints/mRNN_thal_inp.pth"
 
     # Loading in model
@@ -34,7 +35,7 @@ def main():
     # initialize batch
     h = torch.zeros(size=(batch_size, policy.mrnn.total_num_units))
     h = get_initial_condition(policy.mrnn, h)
-    joint_state = torch.zeros(size=(batch_size, 4))
+    joint_state = torch.tensor([(effector.pos_lower_bound[0] + effector.pos_upper_bound[0]) / 2, (effector.pos_lower_bound[1] + effector.pos_upper_bound[1]) / 2, 0, 0]).unsqueeze(0).repeat(batch_size, 1)
 
     if rand_state:
         options = {"batch_size": batch_size}
