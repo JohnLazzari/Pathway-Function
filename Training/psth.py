@@ -16,7 +16,6 @@ from mRNNTorch.mRNN import mRNN
 from mRNNTorch.utils import get_region_activity, get_initial_condition
 from models import Policy
 import sys
-import config
 import math
 
 def find_angle(x, y):
@@ -41,8 +40,8 @@ def main():
     # Parameters for testing
     batch_size = 500
     num_conds = 8
-    config = "configurations/mRNN_hyperdirect.json"
-    model_save_patorch = "checkpoints/mRNN_reaching.pth"
+    config = "configurations/mRNN_thal_inp.json"
+    model_save_patorch = "checkpoints/mRNN_thal_inp.pth"
 
     # Loading in model
     policy = Policy(config, 50, env.n_muscles, device=device)

@@ -18,8 +18,9 @@ def main():
 
     # Parameters for testing
     batch_size = 25
-    config = "configurations/mRNN_hyperdirect.json"
-    model_save_patorch = "checkpoints/mRNN_reaching.pth"
+    rand_state = False
+    config = "configurations/mRNN_thal_inp.json"
+    model_save_patorch = "checkpoints/mRNN_thal_inp.pth"
 
     # Loading in model
     policy = Policy(config, 50, env.n_muscles, device=device)
@@ -35,7 +36,12 @@ def main():
     h = get_initial_condition(policy.mrnn, h)
     joint_state = torch.zeros(size=(batch_size, 4))
 
-    obs, info = env.reset(options={"batch_size": batch_size, "joint_state": joint_state})
+    if rand_state:
+        options = {"batch_size": batch_size}
+    else:
+        options = {"batch_size": batch_size, "joint_state": joint_state}
+
+    obs, info = env.reset(options=options)
     terminated = False
 
     # initial positions and targets
@@ -55,6 +61,8 @@ def main():
     xy = torch.cat(xy, axis=1)
     tg = torch.cat(tg, axis=1)
     loss = l1(xy, tg)  # L1 loss on position
+
+    print(f"Testing loss: {loss}")
 
     colors = plt.cm.inferno(np.linspace(0, 1, len(xy))) 
 

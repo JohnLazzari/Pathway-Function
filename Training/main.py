@@ -8,14 +8,14 @@ from agent_training import OptimizerSpec, Off_Policy_Agent
 from optimization import optimizer 
 from motornet_env import EffectorTwoLinkArmEnv
 import torch
-import config
+import Training.config_rl as config_rl
 import os
 
 def main():
 
 
     ### PARAMETERS ###
-    parser = config.config_parser()
+    parser = config_rl.config_parser()
     args = parser.parse_args()
 
     ### CREATE ENVIRONMENT ###

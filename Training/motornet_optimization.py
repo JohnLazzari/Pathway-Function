@@ -11,13 +11,13 @@ from models import Policy
 
 def main():
 
-    effector = mn.effector.ReluPointMass24()
+    effector = mn.effector.RigidTendonArm26()
     env = mn.environment.RandomTargetReach(effector=effector, max_ep_duration=1.)
 
     device = th.device("cpu")
 
-    config = "configurations/mRNN_hyperdirect.json"
-    model_save_path = "checkpoints/mRNN_reaching"
+    config = "configurations/mRNN_thal_inp.json"
+    model_save_path = "checkpoints/mRNN_thal_inp"
     policy = Policy(config, 50, env.n_muscles, device=device)
     optimizer = th.optim.Adam(policy.parameters(), lr=10**-3)
 

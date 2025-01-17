@@ -14,7 +14,7 @@ from mRNNTorch.mRNN import mRNN
 from mRNNTorch.utils import get_region_activity
 
 class Policy(nn.Module):
-    def __init__(self, config, hidden_dim, output_dim, device):
+    def __init__(self, config, hidden_dim, output_dim, device="cuda", noise_act=0.15, noise_inp=0.01):
         super().__init__()
 
         self.config = config
@@ -26,27 +26,19 @@ class Policy(nn.Module):
         self.activity = np.array([])
         self.count = 0
         
-        self.mrnn = mRNN(config, device=device)
+        self.mrnn = mRNN(config, noise_level_act=noise_act, noise_level_inp=noise_inp, device=device)
         self.fc = torch.nn.Linear(hidden_dim, output_dim)
         self.sigmoid = torch.nn.Sigmoid()
 
         self.to(device)
 
     def forward(self, h, obs, noise=True):
+        # Forward pass through mRNN
         x, h = self.mrnn(h, obs[:, None, :], noise=noise)
+        # Squeeze in the time dimension (doing timesteps one by one)
         h = h.squeeze(1)
+        # Get cortex activity
         m1_act = get_region_activity(self.mrnn, h, "alm")
+        # Motor output
         u = self.sigmoid(self.fc(m1_act)).squeeze(dim=1)
-        u_ = u.clone().norm()
-        self.activity = np.append(self.activity, u_.detach().numpy())
-        self.count += 1
-        if self.count == 5000:
-            print(self.activity)
-            plt.plot(self.activity)
-            plt.show()
         return u, h
-    
-    def init_hidden(self, batch_size):
-        weight = next(self.parameters()).data
-        hidden = weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(self.device)
-        return hidden
