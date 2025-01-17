@@ -11,10 +11,9 @@ from models import Policy
 
 def main():
 
-    effector = mn.effector.RigidTendonArm26()
+    device = th.device("cuda")
+    effector = mn.effector.RigidTendonArm26(mn.muscle.MujocoHillMuscle())
     env = mn.environment.RandomTargetReach(effector=effector, max_ep_duration=1.)
-
-    device = th.device("cpu")
 
     config = "configurations/mRNN_thal_inp.json"
     model_save_path = "checkpoints/mRNN_thal_inp"
