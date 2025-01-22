@@ -33,7 +33,7 @@
         "name": "stn",
         "num_units": 50,
         "base_firing": 1,
-        "init": 1
+        "init": 0
       },
       {
         "name": "snr",
@@ -50,6 +50,12 @@
       {
         "name": "alm_exc",
         "num_units": 50,
+        "base_firing": 0,
+        "init": 0 
+      },
+      {
+        "name": "alm_inhib",
+        "num_units": 15,
         "base_firing": 0,
         "init": 0 
       }
@@ -131,9 +137,29 @@
         "sign": "exc"
       },
       {
+        "src_region": "thal",
+        "dst_region": "alm_inhib",
+        "sign": "exc"
+      },
+      {
         "src_region": "alm_exc",
         "dst_region": "alm_exc",
         "sign": "exc"
+      },
+      {
+        "src_region": "alm_exc",
+        "dst_region": "alm_inhib",
+        "sign": "exc"
+      },
+      {
+        "src_region": "alm_inhib",
+        "dst_region": "alm_inhib",
+        "sign": "inhib"
+      },
+      {
+        "src_region": "alm_inhib",
+        "dst_region": "alm_exc",
+        "sign": "inhib"
       },
       {
         "src_region": "alm_exc",
@@ -143,6 +169,26 @@
       {
         "src_region": "alm_exc",
         "dst_region": "d2",
+        "sign": "exc"
+      },
+      {
+        "src_region": "stn",
+        "dst_region": "gpe",
+        "sign": "exc"
+      },
+      {
+        "src_region": "gpe",
+        "dst_region": "snr",
+        "sign": "inhib"
+      },
+      {
+        "src_region": "gpe",
+        "dst_region": "d2",
+        "sign": "inhib"
+      },
+      {
+        "src_region": "alm_exc",
+        "dst_region": "stn",
         "sign": "exc"
       }
     ],
