@@ -24,7 +24,13 @@ def main():
     torch.manual_seed(args.seed)
 
     device = torch.device("cpu")
-    effector = mn.effector.RigidTendonArm26(mn.muscle.MujocoHillMuscle())
+
+    if args.arm == "relu":
+        effector = mn.effector.ReluPointMass24()
+    elif args.arm == "rigid_tendon":
+        effector = mn.effector.RigidTendonArm26(mn.muscle.MujocoHillMuscle())
+    else:
+        raise ValueError()
     env = mn.environment.RandomTargetReach(effector=effector, max_ep_duration=1.)
 
     policy = Policy(

@@ -1,21 +1,22 @@
 ### GENERAL TRAINING PARAMETERS ###
 lr = 0.001
-weight_decay = 1e-3
+weight_decay = 1e-4
 seed = 123456
 dt = 10
 t_const = 100
 batch_first = True
 activation_name = "relu"
 constrained = True
-epochs = 10000
+epochs = 100000
 batch_size = 1
 save_iter = 100
 device = "cpu"
-noise_level_inp = 0.01
-noise_level_act = 0.15
+noise_level_inp = 0.001
+noise_level_act = 0.001
+arm = "relu"
 
 ### MODEL SAVING ###
-model_save_path = "checkpoints/mRNN_thal_inp.pth"
+model_save_path = "Training/checkpoints/mRNN_thal_inp_relu_2.pth"
 model_config_path = "Training/configurations/mRNN_thal_inp.json"
 
 

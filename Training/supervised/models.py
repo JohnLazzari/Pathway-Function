@@ -75,9 +75,9 @@ class Policy(nn.Module):
 
         self.to(device)
 
-    def forward(self, h, obs, noise=True):
+    def forward(self, h, obs, *args, noise=True):
         # Forward pass through mRNN
-        x, h = self.mrnn(h, obs[:, None, :], noise=noise)
+        x, h = self.mrnn(h, obs[:, None, :], *args, noise=noise)
         # Squeeze in the time dimension (doing timesteps one by one)
         h = h.squeeze(1)
         # Get cortex activity

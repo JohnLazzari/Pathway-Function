@@ -10,6 +10,11 @@ def config_parser():
                         default=1e-3, 
                         help='learning rate (default: 0.001)')
 
+    parser.add_argument('--arm', 
+                        type=str, 
+                        default="rigid_tendon", 
+                        help='relu or rigid_tendon')
+
     parser.add_argument('--weight_decay', 
                         type=float, 
                         default=1e-3, 
