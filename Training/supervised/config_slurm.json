@@ -1,0 +1,39 @@
+{
+    "job1": {
+        "lr": 0.001,
+        "weight_decay": 1e-3,
+        "seed": 123456,
+        "dt": 10,
+        "t_const": 100,
+        "batch_first": true,
+        "activation_name": "relu",
+        "constrained": true,
+        "epochs": 100000,
+        "batch_size": 1,
+        "save_iter": 100,
+        "device": "cpu",
+        "noise_level_inp": 0.01,
+        "noise_level_act": 0.15,
+        "model_save_path": "checkpoints/mRNN_thal_inp.pth",
+        "model_config_path": "Training/configurations/mRNN_thal_inp.json"
+    },
+
+    "job2": {
+        "lr": 0.001,
+        "weight_decay": 1e-3,
+        "seed": 123456,
+        "dt": 10,
+        "t_const": 100,
+        "batch_first": true,
+        "activation_name": "relu",
+        "constrained": true,
+        "epochs": 100000,
+        "batch_size": 32,
+        "save_iter": 100,
+        "device": "cpu",
+        "noise_level_inp": 0.01,
+        "noise_level_act": 0.15,
+        "model_save_path": "checkpoints/mRNN_thal_inp_b32.pth",
+        "model_config_path": "Training/configurations/mRNN_thal_inp.json"
+    }
+}
